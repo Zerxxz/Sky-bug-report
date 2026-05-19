@@ -10,8 +10,8 @@
 | Field | Value |
 |-------|-------|
 | **Title** | `DaiUsds.daiToUsds()` / `usdsToDai()` Redirects Output Tokens to Arbitrary `usr` Address Enabling Phishing Drain |
-| **Severity** | **HIGH** |
-| **Asset** | `https://app.sky.money` — Sky Web UI / DaiUsds contract |
+| **Severity** | **Critical** |
+| **Impact Category** | Malicious interactions with an already-connected wallet — modifying transaction arguments, substituting contract addresses |
 | **Contract** | `DaiUsds` at `0x3225737a9Bbb6473CB4a45b7244ACa2BeFdB276A` (mainnet) |
 | **Impact** | User approves DaiUsds → malicious frontend redirects converted tokens to attacker address → full loss of converted amount |
 | **Confirmed via** | Source code analysis + Foundry mainnet-fork PoC |
@@ -61,11 +61,11 @@ The victim sees the transaction succeed on-chain but receives **zero** of the co
 
 | Category | Value |
 |----------|-------|
-| **Severity** | HIGH |
-| **Impact Type** | Token redirect via malicious frontend — funds lost entirely |
-| **In-Scope Category** | Malicious wallet interaction / token redirect |
+| **Severity** | **Critical** |
+| **Impact Type** | Token redirect via malicious frontend — full loss of converted amount |
+| **In-Scope Category** | Malicious interactions with already-connected wallet — modifying transaction arguments, substituting recipient address |
 | **Affected Function** | `daiToUsds(address usr, uint256 wad)` and `usdsToDai(address usr, uint256 wad)` |
-| **Root Cause** | Output tokens sent to `usr` parameter instead of `msg.sender` |
+| **Root Cause** | Output tokens sent to `usr` parameter (attacker-controlled) instead of `msg.sender` |
 
 A user who approves DaiUsds and uses a compromised or phishing frontend will lose the entire approved amount of DAI (when converting DAI→USDS) or USDS (when converting USDS→DAI). The attack is invisible until the user checks their wallet and sees zero received.
 

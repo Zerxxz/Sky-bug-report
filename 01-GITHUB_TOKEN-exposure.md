@@ -10,7 +10,8 @@
 | Field | Value |
 |-------|-------|
 | **Title** | `GITHUB_TOKEN` Secret Exposed to Browser via next.config.js `env` Block |
-| **Severity** | **Critical** |
+| **Severity** | **Critical** *(conditional — see below)* |
+| **Impact Category** | Sensitive Data Disclosure *(if write-scope token)* |
 | **Asset** | `https://vote.sky.money` — `governance-portal-v2` |
 | **File** | `governance-portal-v2/next.config.js` lines 53–56 |
 | **Impact** | Attacker extracts GitHub token from browser JS bundle, gains API access to sky-ecosystem repositories |
@@ -55,7 +56,25 @@ If a privileged `GITHUB_TOKEN` is set at build time, it gets hardcoded into the 
 2. Extract the token value from any JS bundle chunk
 3. Use it against the GitHub API to push commits to `sky-ecosystem` repos
 
-This qualifies as: *"Retrieve sensitive data/files from a running server... blockchain keys (this does not include non-sensitive environment variables)"* — a GitHub token with write access to governance repositories is blockchain-key-equivalent.
+### Impact — Conditional Severity
+
+| Token Scope | Severity | In-Scope Category |
+|-------------|----------|-------------------|
+| **Write access** to sky-ecosystem repos | **Critical** | "Retrieve sensitive data... blockchain keys" |
+| **Read-only** access | ❌ Likely **Out of Scope** | Excluded as "non-sensitive environment variables" |
+
+**⚠️ REQUIRED ACTION:** Verify the `GITHUB_TOKEN` scope in CI/CD pipeline (`governance-portal-v2/.github/workflows/`) before submitting. If the token has write permissions, this qualifies as Critical. If read-only, the finding may be rejected.
+
+**To verify token scope:**
+```bash
+# Check GitHub Actions workflow for token permissions
+cat governance-portal-v2/.github/workflows/*.yml | grep -A5 "GITHUB_TOKEN\|secrets.GITHUB_TOKEN"
+
+# Check if any workflow pushes commits or creates PRs
+grep -r "push\|createRef\|merge\|createPullRequest" governance-portal-v2/.github/workflows/
+```
+
+If workflows use the token for writing (merge, PR creation, push to protected branches), severity is **Critical**. If only used for `actions/checkout` or read operations, the finding is likely **Out of Scope**.
 
 ---
 
