@@ -1,7 +1,7 @@
 # SECURITY BUG REPORT — Sky Bug Bounty (Immunefi)
 
-> **Scope: Web & Applications only** | immunefi.com/bug-bounty/sky/scope/#top
-> **Assets: https://vote.sky.money, https://chainlog.sky.money, https://sky.money, https://app.sky.money**
+> **Scope: Web & Applications** | immunefi.com/bug-bounty/sky/scope/#top
+> **Asset: https://vote.sky.money** (governance-portal-v2 referenced in scope documentation)
 
 ---
 
@@ -12,10 +12,21 @@
 | **Title** | `GITHUB_TOKEN` Secret Exposed to Browser via next.config.js `env` Block |
 | **Severity** | **Critical** *(conditional — see below)* |
 | **Impact Category** | Sensitive Data Disclosure *(if write-scope token)* |
-| **Asset** | `https://vote.sky.money` — `governance-portal-v2` |
-| **File** | `governance-portal-v2/next.config.js` lines 53–56 |
+| **Scope** | **Web & Applications** — `vote.sky.money` |
+| **Asset Repository** | `https://github.com/sky-ecosystem/governance-portal-v2` *(referenced in scope documentation under vote.sky.money)* |
+| **Vulnerable File** | `governance-portal-v2/next.config.js` lines 53–56 |
 | **Impact** | Attacker extracts GitHub token from browser JS bundle, gains API access to sky-ecosystem repositories |
 | **Confirmed via** | Source code analysis + Codex CLI `--sandbox danger-full-access` |
+
+---
+
+### ⚠️ Scope Verification Note
+
+The `governance-portal-v2` repository is **documented but not explicitly listed** in the Immunefi websites_and_applications asset list (18 assets). However, the scope documentation for `vote.sky.money` explicitly references this repository with this note:
+
+> *"Further information about the Governance Voting asset can be found at: ... [governance-portal-v2](https://github.com/sky-ecosystem/governance-portal-v2)"*
+
+This makes the repository's security relevant to the `vote.sky.money` Web & Applications scope.
 
 ---
 

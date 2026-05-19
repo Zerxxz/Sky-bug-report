@@ -1,7 +1,7 @@
 # SECURITY BUG REPORT — Sky Bug Bounty (Immunefi)
 
-> **Scope: Web & Applications only** | immunefi.com/bug-bounty/sky/scope/#top
-> **Assets: https://vote.sky.money, https://chainlog.sky.money, https://sky.money, https://app.sky.money**
+> **Scope: Smart Contracts** | immunefi.com/bug-bounty/sky/scope/#top
+> **Asset: https://github.com/sky-ecosystem/usds/blob/dev/src/DaiUsds.sol**
 
 ---
 
@@ -12,9 +12,18 @@
 | **Title** | `DaiUsds.daiToUsds()` / `usdsToDai()` Redirects Output Tokens to Arbitrary `usr` Address Enabling Phishing Drain |
 | **Severity** | **Critical** |
 | **Impact Category** | Malicious interactions with an already-connected wallet — modifying transaction arguments, substituting contract addresses |
+| **Scope** | **Smart Contracts** — `https://github.com/sky-ecosystem/usds/blob/dev/src/DaiUsds.sol` |
 | **Contract** | `DaiUsds` at `0x3225737a9Bbb6473CB4a45b7244ACa2BeFdB276A` (mainnet) |
 | **Impact** | User approves DaiUsds → malicious frontend redirects converted tokens to attacker address → full loss of converted amount |
 | **Confirmed via** | Source code analysis + Foundry mainnet-fork PoC |
+
+---
+
+### ⚠️ Scope Classification Note
+
+This bug is classified under **Smart Contracts** scope because the vulnerability is in the `DaiUsds.sol` contract (explicitly listed in the smart contract scope with 224 assets).
+
+**Attack vector context:** The vulnerability is exploitable via a malicious Web & Applications frontend (e.g., phishing site mimicking `app.sky.money`). However, the root cause is in the smart contract design — the `usr` parameter has no domain binding, allowing any caller to redirect output tokens.
 
 ---
 
