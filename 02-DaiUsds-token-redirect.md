@@ -11,7 +11,7 @@
 |-------|-------|
 | **Title** | `DaiUsds.daiToUsds()` / `usdsToDai()` Redirects Output Tokens to Arbitrary `usr` Address Enabling Phishing Drain |
 | **Severity** | **Critical** |
-| **Impact Category** | Malicious interactions with an already-connected wallet — modifying transaction arguments, substituting contract addresses |
+| **Impact Category** | "Direct theft of any user funds, whether at-rest or in-motion" — user approves DaiUsds → daiToUsds() redirects USDS to attacker address → user loses DAI with zero USDS received |
 | **Scope** | **Smart Contracts** — `https://github.com/sky-ecosystem/usds/blob/dev/src/DaiUsds.sol` |
 | **Contract** | `DaiUsds` at `0x3225737a9Bbb6473CB4a45b7244ACa2BeFdB276A` (mainnet) |
 | **Impact** | User approves DaiUsds → malicious frontend redirects converted tokens to attacker address → full loss of converted amount |
@@ -24,6 +24,8 @@
 This bug is classified under **Smart Contracts** scope because the vulnerability is in the `DaiUsds.sol` contract (explicitly listed in the smart contract scope with 224 assets).
 
 **Attack vector context:** The vulnerability is exploitable via a malicious Web & Applications frontend (e.g., phishing site mimicking `app.sky.money`). However, the root cause is in the smart contract design — the `usr` parameter has no domain binding, allowing any caller to redirect output tokens.
+
+**Impact in-scope:** "Direct theft of any user funds, whether at-rest or in-motion" — the user loses DAI (at-rest) and receives zero USDS (in-motion redirect to attacker).
 
 ---
 
@@ -71,8 +73,8 @@ The victim sees the transaction succeed on-chain but receives **zero** of the co
 | Category | Value |
 |----------|-------|
 | **Severity** | **Critical** |
-| **Impact Type** | Token redirect via malicious frontend — full loss of converted amount |
-| **In-Scope Category** | Malicious interactions with already-connected wallet — modifying transaction arguments, substituting recipient address |
+| **Impact Type** | Direct theft of user funds — full loss of converted amount |
+| **In-Scope Category** | "Direct theft of any user funds, whether at-rest or in-motion" |
 | **Affected Function** | `daiToUsds(address usr, uint256 wad)` and `usdsToDai(address usr, uint256 wad)` |
 | **Root Cause** | Output tokens sent to `usr` parameter (attacker-controlled) instead of `msg.sender` |
 
@@ -378,12 +380,13 @@ function usdsToDai(address usr, uint256 wad) external {
 
 ### References
 
-| Reference | Link |
-|-----------|------|
+| Reference | Value |
+|-----------|-------|
 | DaiUsds source | `/tmp/sky-audit/usds/src/DaiUsds.sol` |
 | UsdsJoin source | `/tmp/sky-audit/usds/src/UsdsJoin.sol` |
 | Live contract (mainnet) | `0x3225737a9Bbb6473CB4a45b7244ACa2BeFdB276A` |
-| Immunefi scope | Malicious wallet interaction / token redirect |
+| Scope | Smart Contracts |
+| Impact In-Scope | "Direct theft of any user funds, whether at-rest or in-motion" |
 | Root cause | Output tokens sent to `usr` parameter instead of `msg.sender` |
 
 ---
